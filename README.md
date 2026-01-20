@@ -28,7 +28,7 @@ O projeto é contido em uma estrutura simples e limpa:
 ├── index.html           # Estrutura base e Modal de Código
 ├── style.css            # Estilização Global, Animações e Temas
 ├── script.js            # Lógica do "Live Coding", Canvas e Navegação
-├── avatar.png           # Imagem de perfil
+├── images folder        # Imagens de perfil e projetos
 └── README.md            # Documentação
 ```
 
