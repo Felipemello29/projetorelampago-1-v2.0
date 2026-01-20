@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portfolio-v2">
+    <title>Portfolio V2 | Live Coding</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <canvas id="starfield"></canvas>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">PORTFOLIO<b>.</b></div>
+        <div class="menu-toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" data-section="home" class="active">Home</a></li>
+            <li><a href="#" data-section="projects">Projects</a></li>
+            <li><a href="#" data-section="services">Services</a></li>
+            <li><a href="#" data-section="about">About</a></li>
+            <li><a href="#" data-section="contact" class="btn-contact">Contact</a></li>
+            <li><a href="#" id="reboot-btn" class="nav-warning">Reboot</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="app-container">
+        <!-- Content will be injected here via JS -->
+    </main>
+
+    <!-- Code Editor Modal Overlay -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="code-window">
+            <div class="window-header">
+                <div class="dots">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                </div>
+                <div class="filename" id="modal-filename">component.html</div>
+            </div>
+            <div class="window-body">
+                <pre><code id="typewriter-text"></code><span class="cursor">|</span></pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
