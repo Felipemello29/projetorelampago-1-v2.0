@@ -245,15 +245,62 @@ function initiateReboot() {
 
         // Listen for input
         document.addEventListener('keydown', handleRebootInput);
+
+        // Show clickable options for mobile/mouse users
+        showRebootOptions();
     }
 
     typeLines();
+}
+
+function showRebootOptions() {
+    // Check if options already exist
+    if (document.querySelector('.reboot-options')) return;
+
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'reboot-options';
+
+    const btnYes = document.createElement('button');
+    btnYes.className = 'reboot-btn-option danger';
+    btnYes.textContent = 'YES [Y]';
+    btnYes.onclick = () => {
+        document.removeEventListener('keydown', handleRebootInput);
+        removeRebootOptions();
+        typeWriterText.textContent += "Y";
+        executeReset();
+    };
+
+    const btnNo = document.createElement('button');
+    btnNo.className = 'reboot-btn-option';
+    btnNo.textContent = 'NO [N]';
+    btnNo.onclick = () => {
+        document.removeEventListener('keydown', handleRebootInput);
+        removeRebootOptions();
+        typeWriterText.textContent += "N";
+        abortReset();
+    };
+
+    optionsContainer.appendChild(btnYes);
+    optionsContainer.appendChild(btnNo);
+
+    // Append to the window body so it scrolls with content
+    windowBody.appendChild(optionsContainer);
+    windowBody.scrollTop = windowBody.scrollHeight;
+}
+
+function removeRebootOptions() {
+    const opts = document.querySelector('.reboot-options');
+    if (opts) opts.remove();
 }
 
 function handleRebootInput(e) {
     if (!isRebooting) return;
 
     const key = e.key.toUpperCase();
+
+    if (key === 'Y' || key === 'N') {
+        removeRebootOptions();
+    }
 
     if (key === 'Y') {
         document.removeEventListener('keydown', handleRebootInput);
@@ -446,12 +493,14 @@ const navLinksContainer = document.querySelector('.nav-links');
 if (mobileMenuButton && navLinksContainer) {
     mobileMenuButton.addEventListener('click', () => {
         navLinksContainer.classList.toggle('active');
+        mobileMenuButton.classList.toggle('active'); // Animate Icon
     });
 
     // Close menu when clicking any link
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
             navLinksContainer.classList.remove('active');
+            mobileMenuButton.classList.remove('active'); // Reset Icon
         });
     });
 }
