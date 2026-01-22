@@ -12,17 +12,7 @@ const sections = {
       <a href="..." class="btn-secondary">...</a>
     </div>
   </div>
-</section>`,
-        html: `
-            <section class="hero-content">
-                <h1>Welcome to my <span>portfolio</span></h1>
-                <p>My name is Felipe Mello and I am a aspiring fullstack developer.</p>
-                <div class="hero-btns">
-                    <button data-nav-target="projects" class="btn-primary">View Projects</button>
-                    <button data-nav-target="about" class="btn-secondary">Resume</button>
-                </div>
-            </section>
-        `
+</section>`
     },
     projects: {
         filename: 'projects.jsx',
@@ -37,35 +27,7 @@ const sections = {
       ))}
     </div>
   );
-}`,
-        html: `
-            <section class="projects-container">
-                <h2>Featured Projects</h2>
-                <div class="grid-projects">
-                    <a href="https://felipemello29.github.io/projetorelampagoalpha1/projects/project3/1.html" class="card" target="_blank">
-                        <div class="card-img">
-                            <img src="./images/project1.png" alt="Accounting Platform Preview" loading="lazy">
-                        </div>
-                        <h3>Accounting webplataform mockup</h3>
-                        <p>Landing page for a accounting webplataform</p>
-                    </a>
-                    <a href="https://felipemello29.github.io/projetorelampagoalpha1/projects/project2/atvdd4.html" class="card" target="_blank">
-                        <div class="card-img">
-                            <img src="./images/project2.png" alt="Travel Site Preview" loading="lazy">
-                        </div>
-                        <h3>Travel Site mockup</h3>
-                        <p>Landing page for a travel company about travelling the word and documenting it</p>
-                    </a>
-                     <a href="https://felipemello29.github.io/projetorelampagoalpha1/" class="card" target="_blank">
-                        <div class="card-img">
-                            <img src="./images/project3.png" alt="Legacy Portfolio Preview" loading="lazy">
-                        </div>
-                        <h3>Portfolio V1</h3>
-                        <p>Legacy Portfolio Site</p>
-                    </a>
-                </div>
-            </section>
-        `
+}`
     },
     services: {
         filename: 'services.ts',
@@ -79,26 +41,7 @@ const services: Service[] = [
   { title: "Frontend", ... },
   { title: "Backend", ... },
   { title: "UI/UX", ... }
-];`,
-        html: `
-            <section class="services-content">
-                <h2>Services</h2>
-                <div class="services-container">
-                    <div class="card">
-                        <h3>Frontend Development</h3>
-                        <p>Typescript, HTML, CSS, JavaScript</p>
-                    </div>
-                    <div class="card">
-                        <h3>Backend Solutions</h3>
-                        <p>Node.js, Python, Java</p>
-                    </div>
-                    <div class="card">
-                        <h3>UI/UX Design</h3>
-                        <p>Figma, Prototyping, Accessibility</p>
-                    </div>
-                </div>
-            </section>
-        `
+];`
     },
     about: {
         filename: 'about_me.md',
@@ -118,48 +61,7 @@ const services: Service[] = [
 - UI/UX Engineering
 - Performance Optimization
 
-/* End of File */`,
-        html: `
-            <section class="about-content">
-                <h2>About Me</h2>
-                
-                <div class="about-profile">
-                    <div class="about-text">
-                        <p>I am a creative aspiring developer. My mission is to build digital experiences that are not only functional but visually immersive.</p>
-                        <p>Before that, I am also a pixel art hobbist, worked on procurement and supplychain management, have a very long relationship with excel and am a part time Dungeon Master.</p>
-                    </div>
-                    <div class="about-img">
-                        <img src="./images/avatar.png" alt="Profile Avatar" onerror="this.style.display='none'">
-                    </div>
-                </div>
-
-                <div class="services-container">
-                    <h3>// Fields of interest</h3>
-                    <div class="skills-grid">
-                        <div class="skill-card">
-                            <h4>Frontend Dev</h4>
-                            <p>Building responsive, interactive UIs with modern frameworks.</p>
-                        </div>
-                        <div class="skill-card">
-                            <h4>Backend Systems</h4>
-                            <p>Robust API design, database management, and server logic.</p>
-                        </div>
-                        <div class="skill-card">
-                            <h4>UI/UX Design</h4>
-                            <p>Crafting intuitive and accessible user journeys.</p>
-                        </div>
-                        <div class="skill-card">
-                            <h4>A.I</h4>
-                            <p>Learning and understanding the capabilities of AI</p>
-                        </div>
-                        <div class="skill-card">
-                            <h4>Pixel Art</h4>
-                            <p>Creating visually immersive and engaging digital experiences.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        `
+/* End of File */`
     },
     contact: {
         filename: 'contact.json',
@@ -168,17 +70,7 @@ const services: Service[] = [
   "linkedin": "linkedin.com/in/user",
   "status": "Open for work",
   "sendMessage": "function() { ... }"
-}`,
-        html: `
-            <section class="contact-content">
-                <h2>Get In Touch</h2>
-                <p>Have a project in mind? Let's build something awesome together.</p>
-                <div class="contact-btns">
-                    <a href="mailto:felipemello29@gmail.com" class="btn-primary">Send Email</a>
-                    <a href="https://www.linkedin.com/in/felipe-mello-53541421a/" target="_blank" class="btn-secondary">LinkedIn</a>
-                </div>
-            </section>
-        `
+}`
     }
 };
 
@@ -434,10 +326,16 @@ async function handleSectionReveal(sectionName) {
     const wrapper = document.createElement('div');
     wrapper.id = sectionName;
     wrapper.className = 'section-wrapper fade-in';
-    wrapper.innerHTML = sectionData.html;
+
+    // NEW: Clone content from Template
+    const template = document.getElementById('template-' + sectionName);
+    if (template) {
+        const clone = template.content.cloneNode(true);
+        wrapper.appendChild(clone);
+    }
 
     // Actually, simpler: Target direct children of containers
-    const buildTargets = Array.from(wrapper.querySelectorAll('.hero-content > *, .about-profile > *, .services-container > h3, .skills-grid > .skill-card, .projects-container > h2, .card'));
+    const buildTargets = Array.from(wrapper.querySelectorAll('.hero-content > *, .about-profile > *, .services-container > h3, .skills-grid > .skill-card, .projects-container > h2, .card, .contact-content > *'));
 
     // Add base classes
     buildTargets.forEach(el => {
