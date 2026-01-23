@@ -274,26 +274,8 @@ let isAnimating = false;
 let loadedSections = new Set();
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    // Start with Home
-    handleSectionReveal('home');
-
-    // Mark Home as visited
-    const homeLink = document.querySelector('a[data-section="home"]');
-    if (homeLink) homeLink.classList.add('visited');
-
-    // Initialize Motherboard
-    initMotherboard();
-
-    // Add Event Delegation for Navigation Buttons
-    appContainer.addEventListener('click', (e) => {
-        const target = e.target.closest('[data-nav-target]');
-        if (target) {
-            const section = target.getAttribute('data-nav-target');
-            triggerNav(section);
-        }
-    });
-});
+// Initial Setup moved to end of file to support Boot Sequence
+// document.addEventListener('DOMContentLoaded', () => { ... });
 
 // Event Listeners
 navLinks.forEach(link => {
@@ -776,6 +758,21 @@ class SoundManager {
         osc.stop(this.ctx.currentTime + duration + 0.1);
     }
 
+    playBoot() {
+        if (this.isMuted || !this.initialized) return;
+
+        // Startup Chime (Synth Pad Swell)
+        // Root
+        this.playTone(220, 'triangle', 2.5, 0.2);
+        // Fifth
+        this.playTone(330, 'sine', 2.5, 0.2);
+        // Octave
+        this.playTone(440, 'triangle', 2.5, 0.1);
+
+        // Final "OK" Beep
+        setTimeout(() => this.playTone(880, 'square', 0.1, 0.1), 2000);
+    }
+
     playHover() {
         // High pitch sine blip
         this.playTone(800, 'sine', 0.05, 0.1);
@@ -853,8 +850,73 @@ class SoundManager {
 
 const soundManager = new SoundManager();
 
-// Setup Sound Toggle
-document.addEventListener('DOMContentLoaded', () => {
+// --- BOOT SEQUENCE LOGIC ---
+async function runBootSequence() {
+    // Check if already booted in this session
+    if (sessionStorage.getItem('portfolio_booted')) {
+        return;
+    }
+
+    const bootScreen = document.getElementById('boot-screen');
+    const memoryEl = document.getElementById('memory-check');
+    const logEl = document.getElementById('boot-log');
+
+    if (!bootScreen) return;
+
+    // Show Screen
+    bootScreen.classList.remove('hidden');
+
+    // Play sound if possible (might be blocked by browser policy without interaction)
+    // We try anyway; user might have interacted previously
+    soundManager.playBoot();
+
+    // 1. Memory Test
+    let mem = 0;
+    const maxMem = 64000; // 64MB retro style
+    while (mem < maxMem) {
+        mem += 800 + Math.floor(Math.random() * 800);
+        if (mem > maxMem) mem = maxMem;
+        memoryEl.textContent = `MEMORY TEST: ${mem}KB OK`;
+        await wait(20);
+    }
+
+    await wait(500);
+
+    // 2. Log Messages
+    const logs = [
+        "Loading Kernel modules...",
+        "Mounting File System...",
+        "Initializing Neural Interface...",
+        "Loading Portfolio V2.0...",
+        "Access Granted."
+    ];
+
+    for (const log of logs) {
+        const p = document.createElement('p');
+        p.textContent = log;
+        logEl.appendChild(p);
+        soundManager.playTyping(); // Use typing sound for data crunch
+        await wait(300 + Math.random() * 400);
+    }
+
+    await wait(800);
+
+    // 3. Fade Out
+    bootScreen.style.transition = 'opacity 0.8s ease';
+    bootScreen.style.opacity = '0';
+
+    await wait(800);
+    bootScreen.classList.add('hidden');
+
+    // Mark as done
+    sessionStorage.setItem('portfolio_booted', 'true');
+}
+
+// Setup Sound Toggle & Main Init
+document.addEventListener('DOMContentLoaded', async () => {
+    // RUN BOOT SEQUENCE FIRST
+    await runBootSequence();
+
     const toggleBtn = document.getElementById('sound-toggle');
     if (toggleBtn) {
         toggleBtn.addEventListener('click', () => {
@@ -870,6 +932,25 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     document.addEventListener('click', initAudio);
     document.addEventListener('keydown', initAudio);
+
+    // Start with Home (After boot)
+    handleSectionReveal('home');
+
+    // Mark Home as visited
+    const homeLink = document.querySelector('a[data-section="home"]');
+    if (homeLink) homeLink.classList.add('visited');
+
+    // Initialize Motherboard
+    initMotherboard();
+
+    // Add Event Delegation for Navigation Buttons
+    appContainer.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-nav-target]');
+        if (target) {
+            const section = target.getAttribute('data-nav-target');
+            triggerNav(section);
+        }
+    });
 });
 
 // --- Integrations ---
