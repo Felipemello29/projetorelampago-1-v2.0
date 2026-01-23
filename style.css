@@ -996,5 +996,126 @@ body.error-mode * {
 }
 
 @keyframes fadeIn {
-    to { opacity: 1; }
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* =========================================
+   UX ENHANCEMENTS: STATUS BAR & TOOLTIPS
+   ========================================= */
+
+/* Status Bar */
+#status-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(5, 5, 16, 0.98);
+    border-top: 1px solid var(--accent-color);
+    padding: 5px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 2000;
+    /* Above everything */
+    font-family: 'Fira Code', monospace;
+    font-size: 0.8rem;
+    color: var(--accent-color);
+    box-shadow: 0 -2px 10px rgba(0, 243, 255, 0.1);
+}
+
+.status-left,
+.status-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    box-shadow: 0 0 5px var(--accent-color);
+    animation: blink 2s infinite;
+}
+
+#status-text {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#status-meta {
+    opacity: 0.6;
+    font-size: 0.7rem;
+}
+
+#progress-bar {
+    margin-right: 15px;
+    font-weight: bold;
+    color: var(--accent-color);
+    text-shadow: 0 0 5px rgba(0, 243, 255, 0.3);
+}
+
+/* Navigation Tooltips */
+.nav-links li {
+    position: relative;
+}
+
+.nav-links a::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent-color);
+    color: #000;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border-radius: 2px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.2s ease;
+    pointer-events: none;
+    box-shadow: 0 0 10px var(--accent-color);
+    z-index: 101;
+}
+
+.nav-links a:hover::after {
+    opacity: 1;
+    visibility: visible;
+    bottom: -35px;
+    /* Slide down slightly */
+}
+
+/* Mobile Adjustment for Status Bar */
+@media (max-width: 600px) {
+    #status-bar {
+        padding: 5px 10px;
+        font-size: 0.7rem;
+    }
+
+    .status-right {
+        display: none;
+        /* Hide version on mobile to save space */
+    }
+
+    /* Hide tooltips on mobile as hover doesn't exist */
+    .nav-links a::after {
+        display: none;
+    }
+
+    .code-window {
+        bottom: 30px;
+        /* Lift above status bar */
+    }
+}
+
+/* Hide tooltips for visited links */
+.nav-links a.visited::after {
+    display: none !important;
 }

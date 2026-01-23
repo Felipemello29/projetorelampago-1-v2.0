@@ -273,6 +273,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start with Home
     handleSectionReveal('home');
 
+    // Mark Home as visited
+    const homeLink = document.querySelector('a[data-section="home"]');
+    if (homeLink) homeLink.classList.add('visited');
+
     // Initialize Motherboard
     initMotherboard();
 
@@ -292,6 +296,9 @@ navLinks.forEach(link => {
         e.preventDefault();
         const sectionName = link.getAttribute('data-section');
         if (isAnimating) return;
+
+        // NEW: Mark this specific link as visited
+        link.classList.add('visited');
 
         // Update Active Link
         navLinks.forEach(l => l.classList.remove('active'));
@@ -314,6 +321,7 @@ async function handleSectionReveal(sectionName) {
     // Case 2: New Section -> Build & Type Simultaneously
     if (!sections[sectionName]) return;
     isAnimating = true;
+    updateStatus(`> INITIATING COMPILATION FOR [${sectionName.toUpperCase()}]...`, 'busy');
 
     const sectionData = sections[sectionName];
 
@@ -357,10 +365,33 @@ async function handleSectionReveal(sectionName) {
     const totalTime = sectionData.code.length * TYPE_SPEED;
     const interval = totalTime / buildTargets.length;
 
+    // Global Progress Logic
+    const totalPossibleSections = Object.keys(sections).length;
+    const previouslyLoadedCount = loadedSections.size - 1; // Subtract current one which was just added
+    const startProgressPercent = (previouslyLoadedCount / totalPossibleSections) * 100;
+    const targetProgressPercent = (loadedSections.size / totalPossibleSections) * 100;
+    const itemsToBuild = buildTargets.length;
+
+    // Initial paint for this section
+    updateProgressBar(Math.round(startProgressPercent));
+
+    let completedElements = 0;
+
     buildTargets.forEach((el, index) => {
         // Step 1: Reveal as Raw Text
         setTimeout(() => {
             el.classList.add('built'); // Fades opacity to 1
+
+            // Update Progress (Interpolate from Start to Target)
+            completedElements++;
+
+            // Percentage of *this specific section* complete (0 to 1)
+            const sectionCompletionRatio = completedElements / itemsToBuild;
+
+            // Global percent = Start + (Difference * Ratio)
+            const currentGlobalPercent = startProgressPercent + ((targetProgressPercent - startProgressPercent) * sectionCompletionRatio);
+
+            updateProgressBar(Math.round(currentGlobalPercent));
 
             // Step 2: Morph into Component
             setTimeout(() => {
@@ -378,11 +409,66 @@ async function handleSectionReveal(sectionName) {
     modalOverlay.classList.add('hidden');
 
     isAnimating = false;
+    updateStatus("COMPILATION COMPLETE. SYSTEM ONLINE.");
 }
 
 function wait(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+// Status Bar Logic
+const statusBarText = document.getElementById('status-text');
+const statusIndicator = document.querySelector('.status-indicator');
+const progressBar = document.getElementById('progress-bar');
+
+function updateProgressBar(percent) {
+    if (!progressBar) return;
+
+    // Create a 20-char bar
+    const totalChars = 20;
+    const filledChars = Math.floor((percent / 100) * totalChars);
+    const emptyChars = totalChars - filledChars;
+
+    // Using simple chars for retro feel: | for full, . for empty
+    const bar = '[' + '|'.repeat(filledChars) + '.'.repeat(emptyChars) + ']';
+    progressBar.textContent = bar;
+}
+
+function updateStatus(message, type = 'normal') {
+    if (!statusBarText) return;
+    statusBarText.textContent = message;
+
+    if (type === 'busy') {
+        statusBarText.style.color = '#ffaa00'; // Orange
+        statusIndicator.style.backgroundColor = '#ffaa00';
+        statusIndicator.style.boxShadow = '0 0 5px #ffaa00';
+    } else if (type === 'error') {
+        statusBarText.style.color = '#ff3333'; // Red
+        statusIndicator.style.backgroundColor = '#ff3333';
+        statusIndicator.style.boxShadow = '0 0 5px #ff3333';
+    } else {
+        statusBarText.style.color = 'var(--accent-color)'; // Cyan
+        statusIndicator.style.backgroundColor = 'var(--accent-color)';
+        statusIndicator.style.boxShadow = '0 0 5px var(--accent-color)';
+    }
+}
+
+// Hover Effects for Nav
+navLinks.forEach(link => {
+    link.addEventListener('mouseenter', () => {
+        // Stop showing hints if this specific link is visited
+        if (link.classList.contains('visited')) return;
+
+        const target = link.getAttribute('data-section');
+        updateStatus(`TARGET: [${target.toUpperCase()}_MODULE] // READY TO COMPILE`);
+    });
+
+    link.addEventListener('mouseleave', () => {
+        if (!isAnimating) {
+            updateStatus("SYSTEM ONLINE");
+        }
+    });
+});
 
 // Mobile Menu Toggle Logic
 const mobileMenuButton = document.getElementById('mobile-menu');
