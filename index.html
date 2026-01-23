@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Portfolio-v2">
+    <meta name="description"
+        content="Portfolio of Felipe Mello - Fullstack Developer specializing in Web Audio and Immersive UI">
     <title>Portfolio V2 | Live Coding</title>
     <link rel="stylesheet" href="style.css">
     <link
@@ -71,7 +72,7 @@
             <h2>Featured Projects</h2>
             <div class="grid-projects">
                 <a href="https://felipemello29.github.io/projetorelampagoalpha1/projects/project3/1.html" class="card"
-                    target="_blank">
+                    target="_blank" rel="noopener noreferrer">
                     <div class="card-img">
                         <img src="./images/project1.png" alt="Accounting Platform Preview" loading="lazy">
                     </div>
@@ -79,14 +80,15 @@
                     <p>Landing page for a accounting webplataform</p>
                 </a>
                 <a href="https://felipemello29.github.io/projetorelampagoalpha1/projects/project2/atvdd4.html"
-                    class="card" target="_blank">
+                    class="card" target="_blank" rel="noopener noreferrer">
                     <div class="card-img">
                         <img src="./images/project2.png" alt="Travel Site Preview" loading="lazy">
                     </div>
                     <h3>Travel Site mockup</h3>
                     <p>Landing page for a travel company about travelling the world and documenting it</p>
                 </a>
-                <a href="https://felipemello29.github.io/projetorelampagoalpha1/" class="card" target="_blank">
+                <a href="https://felipemello29.github.io/projetorelampagoalpha1/" class="card" target="_blank"
+                    rel="noopener noreferrer">
                     <div class="card-img">
                         <img src="./images/project3.png" alt="Legacy Portfolio Preview" loading="lazy">
                     </div>
@@ -167,7 +169,7 @@
             <p>Have a project in mind? Let's build something awesome together.</p>
             <div class="contact-btns">
                 <a href="mailto:felipemello29@gmail.com" class="btn-primary">Send Email</a>
-                <a href="https://www.linkedin.com/in/felipe-mello-53541421a/" target="_blank"
+                <a href="https://www.linkedin.com/in/felipe-mello-53541421a/" target="_blank" rel="noopener noreferrer"
                     class="btn-secondary">LinkedIn</a>
             </div>
         </section>
@@ -198,7 +200,8 @@
         </div>
         <div class="status-right">
             <span id="progress-bar">[....................]</span>
-            <div id="sound-toggle" class="status-btn" data-tooltip=":: TOGGLE AUDIO ::">
+            <div id="sound-toggle" class="status-btn" role="button" aria-label="Toggle Audio"
+                data-tooltip=":: TOGGLE AUDIO ::">
                 <span class="sound-icon">🔊</span>
                 <span class="sound-text">AUDIO: ON</span>
             </div>
@@ -206,6 +209,7 @@
         </div>
     </footer>
 
+    <script src="data.js"></script>
     <script src="script.js"></script>
 </body>
 

@@ -1,78 +1,5 @@
-// Data defining the "code" to be typed and the actual HTML to rendered
-const sections = {
-    home: {
-        filename: 'index.html',
-        code: `<!-- Hero Section -->
-<section class="hero">
-  <div class="hero-content">
-    <h1>...</h1>
-    <p>...</p>
-    <div class="hero-btns">
-      <a href="..." class="btn-primary">...</a>
-      <a href="..." class="btn-secondary">...</a>
-    </div>
-  </div>
-</section>`
-    },
-    projects: {
-        filename: 'projects.jsx',
-        code: `const Projects = () => {
-  // Data Source
-  const works = [...];
 
-  return (
-    <div class="grid-projects">
-      {works.map(work => (
-        <Card data={work} />
-      ))}
-    </div>
-  );
-}`
-    },
-    services: {
-        filename: 'services.ts',
-        code: `interface Service {
-  icon: string;
-  title: string;
-  desc: string;
-}
-
-const services: Service[] = [
-  { title: "Frontend", ... },
-  { title: "Backend", ... },
-  { title: "UI/UX", ... }
-];`
-    },
-    about: {
-        filename: 'about_me.md',
-        code: `# About System
-        
-[User]: "Who am I?"
-
-> I am a aspiring developer bridging 
-> the gap between code and design.
-
-## Profile_Pic.png
-[LOADING...]
-
-## System_Capabilities
-- Frontend Architecture
-- Backend Solutions
-- UI/UX Engineering
-- Performance Optimization
-
-/* End of File */`
-    },
-    contact: {
-        filename: 'contact.json',
-        code: `{
-  "email": "email@domain.com",
-  "linkedin": "linkedin.com/in/user",
-  "status": "Open for work",
-  "sendMessage": "function() { ... }"
-}`
-    }
-};
+// sections object is now imported from data.js
 
 // Helper to get CSS variable values
 function getCssVar(name) {
@@ -212,6 +139,7 @@ function handleRebootInput(e) {
 }
 
 async function executeReset() {
+    soundManager.playError();
     typeWriterText.textContent += "\n> PERMISSION GRANTED.";
     typeWriterText.textContent += "\n> WIPING MEMORY...";
 
@@ -228,6 +156,9 @@ async function executeReset() {
     typeWriterText.textContent += "\n> CRITICAL FAILURE DETECTED...";
     typeWriterText.textContent += "\n> SYSTEM COLLAPSE IMMINENT.";
     windowBody.scrollTop = windowBody.scrollHeight;
+
+    // Detailed error noise
+    soundManager.playError();
 
     // Trigger Effects
     circuitState.overload = true;
@@ -252,6 +183,10 @@ function typeCode(text) {
         function type() {
             if (i < text.length) {
                 typeWriterText.textContent += text.charAt(i);
+
+                // Sound Integration
+                if (text.charAt(i) !== ' ') soundManager.playTyping();
+
                 i++;
 
                 // Auto Scroll to bottom
@@ -282,6 +217,7 @@ let loadedSections = new Set();
 navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
+        soundManager.playClick(); // Added Click Sound
         const sectionName = link.getAttribute('data-section');
         if (isAnimating) return;
 
@@ -294,6 +230,9 @@ navLinks.forEach(link => {
 
         handleSectionReveal(sectionName);
     });
+
+    // Hover Sound Effect
+    link.addEventListener('mouseenter', () => soundManager.playHover());
 });
 
 async function handleSectionReveal(sectionName) {
@@ -1084,71 +1023,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-// --- Integrations ---
 
-// Typewriter Sound
-const originalTypeCode = typeCode;
-typeCode = function (text) {
-    return new Promise(resolve => {
-        let i = 0;
-        function type() {
-            if (i < text.length) {
-                typeWriterText.textContent += text.charAt(i);
-
-                // Sound Integration
-                if (text.charAt(i) !== ' ') soundManager.playTyping();
-
-                i++;
-                windowBody.scrollTop = windowBody.scrollHeight;
-                const speed = TYPE_SPEED + (Math.random() * 15);
-                setTimeout(type, speed);
-            } else {
-                resolve();
-            }
-        }
-        type();
-    });
-};
-
-// Nav Sounds
-navLinks.forEach(link => {
-    link.addEventListener('mouseenter', () => soundManager.playHover());
-    link.addEventListener('click', () => soundManager.playClick());
-});
-
-// Error Sound Integration
-const originalExecuteReset = executeReset;
-executeReset = async function () {
-    soundManager.playError();
-
-    // Original Logic duplicates here because we can't easily wrap async function mid-execution without full replace
-    // So we just call the original logic BUT we wanted the sound at the start.
-    // Actually, let's just copy the logic since we are replacing the function pointer.
-
-    typeWriterText.textContent += "\n> PERMISSION GRANTED.";
-    typeWriterText.textContent += "\n> WIPING MEMORY...";
-
-    // Glitch the button
-    const rBtn = document.getElementById('reboot-btn');
-    if (rBtn) rBtn.classList.add('glitch-active');
-
-    // Apply global error flicker
-    document.body.classList.add('error-mode');
-
-    windowBody.scrollTop = windowBody.scrollHeight;
-    await wait(800);
-
-    typeWriterText.textContent += "\n> CRITICAL FAILURE DETECTED...";
-    typeWriterText.textContent += "\n> SYSTEM COLLAPSE IMMINENT.";
-    windowBody.scrollTop = windowBody.scrollHeight;
-
-    // Detailed error noise
-    soundManager.playError();
-
-    // Trigger Effects
-    circuitState.overload = true;
-    document.body.classList.add('page-shatter');
-
-    await wait(2400);
-    location.reload();
-};

@@ -983,6 +983,12 @@ body.error-mode * {
         pointer-events: none;
         transform: translateY(-20px);
         transition: all 0.3s ease-in-out;
+
+        /* Scroll Fixes */
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
+        padding-bottom: 50px;
+        /* Extra space for last item */
     }
 
     .nav-links.active {
