@@ -10,6 +10,12 @@
     /* Terminal Green/Cyan */
     --text-glow: 0 0 10px rgba(0, 243, 255, 0.7), 0 0 20px rgba(0, 243, 255, 0.5);
     --border-glow: 0 0 8px rgba(0, 243, 255, 0.5);
+
+    /* Dynamic Colors for JS */
+    --color-error: #ff3333;
+    --color-warning: #ffaa00;
+    --accent-rgb: 0, 243, 255;
+    /* For rgba usage in JS */
 }
 
 * {
@@ -798,11 +804,45 @@ body.error-mode * {
 /* Contact Buttons Stacked */
 .contact-btns {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 1.5rem;
+    justify-content: center;
+    gap: 1.5rem;
 }
+
+/* Status Bar Extras */
+.status-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.status-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 2px 8px;
+    border: 1px solid transparent;
+    transition: 0.3s;
+    font-size: 0.9rem;
+    color: var(--accent-color);
+}
+
+.status-btn:hover {
+    background: rgba(0, 243, 255, 0.1);
+    border: 1px solid var(--accent-color);
+    box-shadow: var(--border-glow);
+}
+
+.status-btn.muted {
+    opacity: 0.5;
+    color: #888;
+}
+
+.status-btn.muted .sound-text {
+    text-decoration: line-through;
+}
+
+
 
 /* Hamburger Menu Default (Hidden) */
 .menu-toggle {
