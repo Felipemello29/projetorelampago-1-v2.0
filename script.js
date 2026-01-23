@@ -90,7 +90,8 @@ const navLinks = document.querySelectorAll('.nav-links a');
 // Shared State for Circuit Background
 let circuitState = {
     overload: false,
-    surge: false
+    surge: false,
+    attractor: { x: 0, y: 0, active: false }
 };
 
 // Helper for navigation
@@ -548,23 +549,44 @@ function initMotherboard() {
                 return;
             }
 
-            // Random turns
-            if (Math.random() < 0.05) {
-                if (this.dir % 2 === 0) { // Vertical -> Horizontal
-                    this.dir = Math.random() < 0.5 ? 1 : 3;
-                } else { // Horizontal -> Vertical
-                    this.dir = Math.random() < 0.5 ? 0 : 2;
-                }
-            }
-
             // Store previous position before moving
             this.prevX = this.x;
             this.prevY = this.y;
 
+            // Attractor Logic (Flow towards mouse/element)
+            if (circuitState.attractor.active) {
+                // Bias the turn towards the attractor
+                if (Math.random() < 0.1) { // Higher turn rate when active
+                    const dx = circuitState.attractor.x - this.x;
+                    const dy = circuitState.attractor.y - this.y;
+
+                    // 0: Up, 1: Right, 2: Down, 3: Left
+                    // We want to pick a direction that minimizes distance
+
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        // Move Horizontal
+                        this.dir = dx > 0 ? 1 : 3;
+                    } else {
+                        // Move Vertical
+                        this.dir = dy > 0 ? 2 : 0;
+                    }
+                }
+            } else {
+                // Random turns (Standard)
+                if (Math.random() < 0.05) {
+                    if (this.dir % 2 === 0) { // Vertical -> Horizontal
+                        this.dir = Math.random() < 0.5 ? 1 : 3;
+                    } else { // Horizontal -> Vertical
+                        this.dir = Math.random() < 0.5 ? 0 : 2;
+                    }
+                }
+            }
+
             // Move
             let moveSpeed = this.speed;
             if (circuitState.overload) moveSpeed = this.speed * 5;
-            else if (circuitState.surge) moveSpeed = this.speed * 3; // Modest speed boost on surge
+            else if (circuitState.surge) moveSpeed = this.speed * 3;
+            else if (circuitState.attractor.active) moveSpeed = this.speed * 2.5; // Faster when attracted
 
             if (this.dir === 0) this.y -= moveSpeed;
             else if (this.dir === 1) this.x += moveSpeed;
@@ -618,6 +640,26 @@ function initMotherboard() {
         const isInteractive = e.target.closest('button, a');
         if (isInteractive) {
             triggerSurge();
+        }
+    });
+
+    // Active Circuit Attractor (Flow to UI)
+    // Active Circuit Attractor (Flow to UI)
+    // Event Delegation for all interactive elements
+    document.addEventListener('mouseover', (e) => {
+        const target = e.target.closest('a, button, input, .card, .project-item, [role="button"]');
+        if (target) {
+            const rect = target.getBoundingClientRect();
+            circuitState.attractor.x = rect.left + rect.width / 2;
+            circuitState.attractor.y = rect.top + rect.height / 2;
+            circuitState.attractor.active = true;
+        }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+        const target = e.target.closest('a, button, input, .card, .project-item, [role="button"]');
+        if (target) {
+            circuitState.attractor.active = false;
         }
     });
 
