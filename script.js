@@ -715,7 +715,12 @@ class SoundManager {
 
         this.updateUI();
 
-        if (!this.isMuted) this.playClick();
+        if (!this.isMuted) {
+            this.playClick();
+            this.startAmbientHum();
+        } else {
+            this.stopAmbientHum();
+        }
     }
 
     updateUI() {
@@ -846,6 +851,74 @@ class SoundManager {
         osc.start();
         osc.stop(this.ctx.currentTime + 0.5);
     }
+
+    // --- Ambient Hum ---
+    startAmbientHum() {
+        if (this.isMuted || !this.initialized || this.ambientNodes) return;
+
+        const t = this.ctx.currentTime;
+        this.ambientNodes = {};
+
+        // 1. Low Frequency Drone (60Hz Hum)
+        const drone = this.ctx.createOscillator();
+        const droneGain = this.ctx.createGain();
+
+        drone.type = 'sine';
+        drone.frequency.value = 60;
+        droneGain.gain.setValueAtTime(0, t);
+        droneGain.gain.linearRampToValueAtTime(0.02, t + 2); // Very subtle
+
+        drone.connect(droneGain);
+        droneGain.connect(this.masterGain);
+        drone.start();
+
+        // 2. Air/Fan Noise (Brown Noise + LPF)
+        const bufferSize = this.ctx.sampleRate * 2; // 2 seconds
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let lastOut = 0;
+        for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            lastOut = (lastOut + (0.02 * white)) / 1.02;
+            data[i] = lastOut * 3.5;
+        }
+
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+        noise.loop = true;
+
+        const noiseFilter = this.ctx.createBiquadFilter();
+        noiseFilter.type = 'lowpass';
+        noiseFilter.frequency.value = 400; // Muffled fan sound
+
+        const noiseGain = this.ctx.createGain();
+        noiseGain.gain.setValueAtTime(0, t);
+        noiseGain.gain.linearRampToValueAtTime(0.03, t + 2); // Subtle
+
+        noise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(this.masterGain);
+        noise.start();
+
+        this.ambientNodes = { drone, droneGain, noise, noiseGain };
+    }
+
+    stopAmbientHum() {
+        if (!this.ambientNodes) return;
+
+        const t = this.ctx.currentTime;
+        const { droneGain, noiseGain, drone, noise } = this.ambientNodes;
+
+        // Fade out
+        droneGain.gain.linearRampToValueAtTime(0, t + 0.5);
+        noiseGain.gain.linearRampToValueAtTime(0, t + 0.5);
+
+        setTimeout(() => {
+            drone.stop();
+            noise.stop();
+            this.ambientNodes = null;
+        }, 500);
+    }
 }
 
 const soundManager = new SoundManager();
@@ -910,6 +983,9 @@ async function runBootSequence() {
 
     // Mark as done
     sessionStorage.setItem('portfolio_booted', 'true');
+
+    // Start Ambience
+    soundManager.startAmbientHum();
 }
 
 // Setup Sound Toggle & Main Init
