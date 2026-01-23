@@ -555,6 +555,17 @@ function initMotherboard() {
 
             // Attractor Logic (Flow towards mouse/element)
             if (circuitState.attractor.active) {
+                // Collision Check (Vanish on touch)
+                const distX = Math.abs(this.x - circuitState.attractor.x);
+                const distY = Math.abs(this.y - circuitState.attractor.y);
+                const hitW = (circuitState.attractor.width / 2) * 0.8;
+                const hitH = (circuitState.attractor.height / 2) * 0.8;
+
+                if (distX < hitW && distY < hitH) {
+                    this.dead = true;
+                    return;
+                }
+
                 // Bias the turn towards the attractor
                 if (Math.random() < 0.1) { // Higher turn rate when active
                     const dx = circuitState.attractor.x - this.x;
@@ -652,6 +663,8 @@ function initMotherboard() {
             const rect = target.getBoundingClientRect();
             circuitState.attractor.x = rect.left + rect.width / 2;
             circuitState.attractor.y = rect.top + rect.height / 2;
+            circuitState.attractor.width = rect.width;
+            circuitState.attractor.height = rect.height;
             circuitState.attractor.active = true;
         }
     });
