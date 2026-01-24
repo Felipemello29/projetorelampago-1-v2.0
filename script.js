@@ -162,7 +162,7 @@ async function executeReset() {
 
     // Trigger Effects
     circuitState.overload = true;
-    document.body.classList.add('page-shatter');
+    // document.body.classList.add('page-shatter'); // Removed as per user preference
 
     await wait(2400); // Wait for shatter animation (2s) + buffer
     location.reload();

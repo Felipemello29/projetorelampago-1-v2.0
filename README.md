@@ -10,13 +10,15 @@ Este projeto é uma evolução do portfólio "Terminal", elevando a estética **
     *   **Efeitos Visuais**: CRT Scanlines, Text Glow, Glassmorphism.
 *   **JavaScript (Vanilla)**:
     *   **State Management**: Controle de estados globais (Circuit Overload, Rebooting).
+    *   **Architecture**: Separação de conteúdo (`data.js`) e lógica (`script.js`).
+    *   **Web Audio API**: Sistema de som imersivo (typing, ambient hum, system sounds) integrado nativamente.
     *   **Canvas API**: Renderização procedural do background "Motherboard" (Placa-mãe) com circuitos interativos.
     *   **Async/Await**: Sincronização da digitação do código com a renderização da UI.
 
 ## 🛠️ Funcionalidades e Experiência
 *   **Live Coding Reveal**: Ao navegar, uma janela de código se abre e "digita" a estrutura da seção antes dela aparecer na tela.
 *   **Interactive Motherboard**: Um background vivo de circuitos que reage aos cliques do usuário (Efeito "Surge").
-*   **System Reboot**: Uma funcionalidade de "Hard Reset" que simula um crash do sistema com uma animação dramática de quebra de tela (`page-shatter`) antes de recarregar a página.
+*   **System Reboot**: Uma funcionalidade de "Hard Reset" que simula um crash do sistema com um efeito "Error Mode" (blink/color cycle) antes de recarregar a página.
 *   **Galeria de Projetos**: Cards interativos que levam aos detalhamentos ou demonstrações dos projetos.
 *   **Modo "Terminal"**: Estilização visual inspirada em IDEs e terminais antigos.
 
@@ -28,6 +30,7 @@ O projeto é contido em uma estrutura simples e limpa:
 ├── index.html           # Estrutura base e Modal de Código
 ├── style.css            # Estilização Global, Animações e Temas
 ├── script.js            # Lógica do "Live Coding", Canvas e Navegação
+├── data.js              # Repositório de textos e templates HTML das seções
 ├── images folder        # Imagens de perfil e projetos
 └── README.md            # Documentação
 ```
