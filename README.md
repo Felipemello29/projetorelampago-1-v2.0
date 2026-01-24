@@ -27,11 +27,14 @@ O projeto é contido em uma estrutura simples e limpa:
 
 ```
 /portfolio-v2
-├── index.html           # Estrutura base e Modal de Código
-├── style.css            # Estilização Global, Animações e Temas
-├── script.js            # Lógica do "Live Coding", Canvas e Navegação
-├── data.js              # Repositório de textos e templates HTML das seções
-├── images folder        # Imagens de perfil e projetos
+├── css/
+│   └── style.css        # Estilização Global
+├── js/
+│   ├── script.js        # Lógica Principal
+│   └── data.js          # Conteúdo
+├── assets/
+│   └── images/          # Imagens de perfil e projetos
+├── index.html           # Estrutura base
 └── README.md            # Documentação
 ```
 
